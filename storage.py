@@ -1,8 +1,18 @@
 import json
 import os
+import sys
 from datetime import datetime
 
 ARQUIVO = "data.json"
+
+# =========================
+# JSON para app
+# =========================
+
+def caminho_arquivo():
+    if getattr(sys, 'frozen', False):
+        return os.path.join(os.path.dirname(sys.executable), "data.json")
+    return "data.json"
 
 
 # =========================
