@@ -1,0 +1,18 @@
+{
+    "trabalhadores": [
+        {
+            "id": 1,
+            "nome": "João",
+            "salario": 1000.0,
+            "values": [],
+            "vales": []
+        },
+        {
+            "id": 3,
+            "nome": "Valdeci Leite ",
+            "salario": 20000.0,
+            "values": [],
+            "vales": []
+        }
+    ]
+}
