@@ -198,83 +198,129 @@ class Gerenciar(ctk.CTkFrame):
 # GERENCIAR TRABALHADOR
 # =============================
 
+# =============================
+# GERENCIAR TRABALHADOR
+# =============================
+
 class GerenciarTrabalhador(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
 
-        self.titulo = ctk.CTkLabel(self, text="", font=FONT_TITULO)
-        self.titulo.pack(pady=20)
+        # Título maior
+        self.titulo = ctk.CTkLabel(self, text="", font=("Arial", 32, "bold"))
+        self.titulo.pack(pady=30)
 
+        # Frame principal ocupando tudo
         self.main_frame = ctk.CTkFrame(self)
-        self.main_frame.pack(fill="both", expand=True, padx=40, pady=20)
+        self.main_frame.pack(fill="both", expand=True, padx=60, pady=20)
 
         self.main_frame.grid_columnconfigure(0, weight=1)
         self.main_frame.grid_columnconfigure(1, weight=1)
+        self.main_frame.grid_rowconfigure(0, weight=1)
 
         self.criar_card_salario()
         self.criar_card_historico()
 
-        ctk.CTkButton(self, text="Voltar",
-                      command=lambda: controller.mostrar_tela(Gerenciar)).pack(pady=20)
+        ctk.CTkButton(
+            self,
+            text="Voltar",
+            height=45,
+            command=lambda: controller.mostrar_tela(Gerenciar)
+        ).pack(pady=20)
 
     # -------------------------
     # UI
     # -------------------------
 
     def criar_card_salario(self):
-        self.card_salario = ctk.CTkFrame(self.main_frame, corner_radius=15)
-        self.card_salario.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+        self.card_salario = ctk.CTkFrame(self.main_frame, corner_radius=20)
+        self.card_salario.grid(row=0, column=0, padx=30, pady=20, sticky="nsew")
 
-        ctk.CTkLabel(self.card_salario, text="Salário", font=FONT_NORMAL).pack()
+        self.card_salario.grid_rowconfigure(8, weight=1)
+
+        ctk.CTkLabel(
+            self.card_salario,
+            text="Salário",
+            font=("Arial", 20, "bold")
+        ).pack(pady=10)
 
         self.salario_valor = ctk.CTkLabel(
             self.card_salario,
             text="R$ 0,00",
-            font=("Arial", 24, "bold"),
+            font=("Arial", 28, "bold"),
             text_color="#4CAF50"
         )
         self.salario_valor.pack(pady=5)
 
-        self.saldo_label = ctk.CTkLabel(self.card_salario, text="", font=FONT_NORMAL)
+        self.saldo_label = ctk.CTkLabel(
+            self.card_salario,
+            text="",
+            font=("Arial", 18)
+        )
         self.saldo_label.pack(pady=5)
 
-        self.salario_entry = ctk.CTkEntry(self.card_salario, placeholder_text="Novo salário")
+        self.salario_entry = ctk.CTkEntry(
+            self.card_salario,
+            placeholder_text="Novo salário",
+            height=40,
+            font=("Arial", 16)
+        )
         self.salario_entry.pack(pady=10)
 
-        ctk.CTkButton(self.card_salario, text="Salvar salário",
-                      command=self.salvar_salario).pack(pady=5)
+        ctk.CTkButton(
+            self.card_salario,
+            text="Salvar salário",
+            height=40,
+            command=self.salvar_salario
+        ).pack(pady=5)
 
-        ctk.CTkLabel(self.card_salario, text="Resgatar vale",
-                     font=FONT_SUBTITULO).pack(pady=10)
+        ctk.CTkLabel(
+            self.card_salario,
+            text="Resgatar vale",
+            font=("Arial", 20, "bold")
+        ).pack(pady=20)
 
-        self.resgatar_entry = ctk.CTkEntry(self.card_salario,
-                                           placeholder_text="Valor do vale")
+        self.resgatar_entry = ctk.CTkEntry(
+            self.card_salario,
+            placeholder_text="Valor do vale",
+            height=40,
+            font=("Arial", 16)
+        )
         self.resgatar_entry.pack(pady=5)
 
-        ctk.CTkButton(self.card_salario, text="Resgatar",
-                      command=self.resgatar_vale).pack(pady=5)
+        ctk.CTkButton(
+            self.card_salario,
+            text="Resgatar",
+            height=40,
+            command=self.resgatar_vale
+        ).pack(pady=5)
 
-        ctk.CTkButton(self.card_salario,
-                      text="Reiniciar histórico",
-                      fg_color="red",
-                      command=self.limpar_historico).pack(pady=10)
+        ctk.CTkButton(
+            self.card_salario,
+            text="Reiniciar histórico",
+            fg_color="red",
+            height=40,
+            command=self.limpar_historico
+        ).pack(pady=20)
 
     def criar_card_historico(self):
-        self.card_historico = ctk.CTkFrame(self.main_frame, corner_radius=15)
-        self.card_historico.grid(row=0, column=1, padx=20, pady=20, sticky="nsew")
+        self.card_historico = ctk.CTkFrame(self.main_frame, corner_radius=20)
+        self.card_historico.grid(row=0, column=1, padx=30, pady=20, sticky="nsew")
 
-        ctk.CTkLabel(self.card_historico,
-                     text="Histórico de Vales",
-                     font=FONT_SUBTITULO).pack(pady=10)
+        ctk.CTkLabel(
+            self.card_historico,
+            text="Histórico de Vales",
+            font=("Arial", 22, "bold")
+        ).pack(pady=15)
 
-        self.lista_vales = ctk.CTkScrollableFrame(self.card_historico,
-                                                  width=350,
-                                                  height=350)
-        self.lista_vales.pack(fill="both", expand=True, padx=10, pady=10)
+        self.lista_vales = ctk.CTkScrollableFrame(
+            self.card_historico
+        )
+        self.lista_vales.pack(fill="both", expand=True, padx=15, pady=10)
 
     # -------------------------
-    # LÓGICA
+    # LÓGICA (inalterada)
     # -------------------------
 
     def carregar_trabalhador(self):
@@ -325,34 +371,46 @@ class GerenciarTrabalhador(ctk.CTkFrame):
         vales = trabalhador.get("vales", [])
 
         if not vales:
-            ctk.CTkLabel(self.lista_vales,
-                         text="Nenhum vale registrado").pack(pady=10)
+            ctk.CTkLabel(
+                self.lista_vales,
+                text="Nenhum vale registrado",
+                font=("Arial", 16)
+            ).pack(pady=20)
             return
 
         for index, vale in enumerate(vales):
-            frame = ctk.CTkFrame(self.lista_vales, corner_radius=10)
-            frame.pack(fill="x", pady=5, padx=5)
+            frame = ctk.CTkFrame(self.lista_vales, corner_radius=12)
+            frame.pack(fill="x", pady=8, padx=5)
 
             texto = f"R$ {formatar_moeda(vale['valor'])} - {vale['data']} {vale['hora']}"
-            ctk.CTkLabel(frame, text=texto).pack(side="left", padx=10)
+
+            ctk.CTkLabel(
+                frame,
+                text=texto,
+                font=("Arial", 16)
+            ).pack(side="left", padx=15, pady=8)
 
             ctk.CTkButton(
                 frame,
                 text="X",
-                width=30,
+                width=35,
+                height=30,
                 fg_color="red",
                 command=lambda i=index: self.remover_vale(i)
-            ).pack(side="right", padx=5)
+            ).pack(side="right", padx=10)
 
     def remover_vale(self, index):
         remover_vale(self.controller.trabalhador_atual["id"], index)
         self.carregar_trabalhador()
 
     def limpar_historico(self):
-        if msg.askyesno("Confirmação",
-                        "Deseja realmente limpar todo o histórico?"):
+        if msg.askyesno(
+            "Confirmação",
+            "Deseja realmente limpar todo o histórico?"
+        ):
             limpar_vales(self.controller.trabalhador_atual["id"])
             self.carregar_trabalhador()
+
 
 
 # =============================
