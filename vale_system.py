@@ -47,29 +47,48 @@ class Menu(ctk.CTkFrame):
         super().__init__(parent)
         self.controller = controller
 
-        titulo = ctk.CTkLabel(self, text="Sistema de Vale", font=FONT_TITULO)
-        titulo.pack(pady=30)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
-        self.msg_label = ctk.CTkLabel(self, text="", text_color="#4CAF50")
+        container = ctk.CTkFrame(self, corner_radius=20)
+        container.grid(row=0, column=0, padx=200, pady=80, sticky="nsew")
+
+        container.grid_columnconfigure(0, weight=1)
+
+        titulo = ctk.CTkLabel(
+            container,
+            text="Sistema de Vale",
+            font=("Arial", 34, "bold")
+        )
+        titulo.pack(pady=40)
+
+        self.msg_label = ctk.CTkLabel(
+            container,
+            text="",
+            font=("Arial", 16),
+            text_color="#4CAF50"
+        )
         self.msg_label.pack(pady=5)
 
-        self.criar_botao("Registrar trabalhador", Registro)
-        self.criar_botao("Gerenciar trabalhadores", Gerenciar)
-        self.criar_botao("Deletar trabalhador", Deletar)
+        self.criar_botao(container, "Registrar trabalhador", Registro)
+        self.criar_botao(container, "Gerenciar trabalhadores", Gerenciar)
+        self.criar_botao(container, "Deletar trabalhador", Deletar)
 
-    def criar_botao(self, texto, tela):
+    def criar_botao(self, parent, texto, tela):
         botao = ctk.CTkButton(
-            self,
+            parent,
             text=texto,
-            width=260,
-            height=45,
+            width=320,
+            height=55,
+            font=("Arial", 16),
             command=lambda: self.controller.mostrar_tela(tela)
         )
-        botao.pack(pady=10)
+        botao.pack(pady=15)
 
     def atualizar_mensagem(self, texto):
         self.msg_label.configure(text=texto)
         self.after(5000, lambda: self.msg_label.configure(text=""))
+
 
 
 # =============================
@@ -81,15 +100,37 @@ class Registro(ctk.CTkFrame):
         super().__init__(parent)
         self.controller = controller
 
-        titulo = ctk.CTkLabel(self, text="Registrar trabalhador", font=FONT_SUBTITULO)
-        titulo.pack(pady=30)
+        titulo = ctk.CTkLabel(
+            self,
+            text="Registrar trabalhador",
+            font=("Arial", 28, "bold")
+        )
+        titulo.pack(pady=40)
 
-        self.nome = ctk.CTkEntry(self, placeholder_text="Nome do trabalhador", width=300)
-        self.nome.pack(pady=15)
+        self.nome = ctk.CTkEntry(
+            self,
+            placeholder_text="Nome do trabalhador",
+            width=400,
+            height=45,
+            font=("Arial", 16)
+        )
+        self.nome.pack(pady=20)
 
-        ctk.CTkButton(self, text="Registrar", command=self.salvar).pack(pady=10)
-        ctk.CTkButton(self, text="Voltar",
-                      command=lambda: controller.mostrar_tela(Menu)).pack(pady=20)
+        ctk.CTkButton(
+            self,
+            text="Registrar",
+            width=200,
+            height=45,
+            command=self.salvar
+        ).pack(pady=10)
+
+        ctk.CTkButton(
+            self,
+            text="Voltar",
+            width=200,
+            height=45,
+            command=lambda: controller.mostrar_tela(Menu)
+        ).pack(pady=20)
 
     def salvar(self):
         nome = self.nome.get().strip()
@@ -106,6 +147,11 @@ class Registro(ctk.CTkFrame):
         self.nome.delete(0, "end")
         self.controller.mostrar_tela(Menu)
 
+    def abrir(self, trabalhador):
+        self.controller.trabalhador_atual = trabalhador
+        self.controller.mostrar_tela(GerenciarTrabalhador)
+
+
 
 # =============================
 # DELETAR
@@ -116,14 +162,23 @@ class Deletar(ctk.CTkFrame):
         super().__init__(parent)
         self.controller = controller
 
-        titulo = ctk.CTkLabel(self, text="Deletar trabalhador", font=FONT_SUBTITULO)
+        titulo = ctk.CTkLabel(
+            self,
+            text="Deletar trabalhador",
+            font=("Arial", 28, "bold")
+        )
         titulo.pack(pady=30)
 
-        self.lista_frame = ctk.CTkFrame(self)
-        self.lista_frame.pack(pady=20, fill="x")
+        self.lista_frame = ctk.CTkScrollableFrame(self)
+        self.lista_frame.pack(fill="both", expand=True, padx=200, pady=20)
 
-        ctk.CTkButton(self, text="Voltar",
-                      command=lambda: controller.mostrar_tela(Menu)).pack(pady=20)
+        ctk.CTkButton(
+            self,
+            text="Voltar",
+            width=200,
+            height=45,
+            command=lambda: controller.mostrar_tela(Menu)
+        ).pack(pady=20)
 
     def atualizar_lista(self):
         for widget in self.lista_frame.winfo_children():
@@ -132,24 +187,34 @@ class Deletar(ctk.CTkFrame):
         trabalhadores = listar_trabalhadores()
 
         if not trabalhadores:
-            ctk.CTkLabel(self.lista_frame,
-                         text="Nenhum trabalhador cadastrado").pack(pady=10)
+            ctk.CTkLabel(
+                self.lista_frame,
+                text="Nenhum trabalhador cadastrado",
+                font=("Arial", 16)
+            ).pack(pady=20)
             return
 
         for trabalhador in trabalhadores:
             ctk.CTkButton(
                 self.lista_frame,
                 text=trabalhador["nome"],
-                width=260,
+                height=50,
+                font=("Arial", 16),
+                fg_color="red",
                 command=lambda t=trabalhador: self.confirmar(t)
-            ).pack(pady=5)
+            ).pack(fill="x", pady=8, padx=20)
 
     def confirmar(self, trabalhador):
-        if msg.askyesno("Confirmação",
-                        f"Deseja deletar {trabalhador['nome']}?"):
+        resposta = msg.askyesno(
+            "Confirmar exclusão",
+            f"Deseja realmente excluir {trabalhador['nome']}?"
+        )
+
+        if resposta:
             deletar_trabalhador(trabalhador["id"])
-            self.controller.menu.atualizar_mensagem("Trabalhador deletado!")
-            self.controller.mostrar_tela(Menu)
+            self.atualizar_lista()
+
+
 
 
 # =============================
@@ -161,14 +226,23 @@ class Gerenciar(ctk.CTkFrame):
         super().__init__(parent)
         self.controller = controller
 
-        titulo = ctk.CTkLabel(self, text="Gerenciar trabalhadores", font=FONT_SUBTITULO)
+        titulo = ctk.CTkLabel(
+            self,
+            text="Gerenciar trabalhadores",
+            font=("Arial", 28, "bold")
+        )
         titulo.pack(pady=30)
 
-        self.lista_frame = ctk.CTkFrame(self)
-        self.lista_frame.pack(pady=20, fill="x")
+        self.lista_frame = ctk.CTkScrollableFrame(self)
+        self.lista_frame.pack(fill="both", expand=True, padx=200, pady=20)
 
-        ctk.CTkButton(self, text="Voltar",
-                      command=lambda: controller.mostrar_tela(Menu)).pack(pady=20)
+        ctk.CTkButton(
+            self,
+            text="Voltar",
+            width=200,
+            height=45,
+            command=lambda: controller.mostrar_tela(Menu)
+        ).pack(pady=20)
 
     def atualizar_lista(self):
         for widget in self.lista_frame.winfo_children():
@@ -177,26 +251,26 @@ class Gerenciar(ctk.CTkFrame):
         trabalhadores = listar_trabalhadores()
 
         if not trabalhadores:
-            ctk.CTkLabel(self.lista_frame,
-                         text="Nenhum trabalhador cadastrado").pack(pady=10)
+            ctk.CTkLabel(
+                self.lista_frame,
+                text="Nenhum trabalhador cadastrado",
+                font=("Arial", 16)
+            ).pack(pady=20)
             return
 
         for trabalhador in trabalhadores:
             ctk.CTkButton(
                 self.lista_frame,
                 text=trabalhador["nome"],
-                width=260,
+                height=50,
+                font=("Arial", 16),
                 command=lambda t=trabalhador: self.abrir(t)
-            ).pack(pady=5)
+            ).pack(fill="x", pady=8, padx=20)
 
     def abrir(self, trabalhador):
         self.controller.trabalhador_atual = trabalhador
         self.controller.mostrar_tela(GerenciarTrabalhador)
 
-
-# =============================
-# GERENCIAR TRABALHADOR
-# =============================
 
 # =============================
 # GERENCIAR TRABALHADOR
