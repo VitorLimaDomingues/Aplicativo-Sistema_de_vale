@@ -394,7 +394,7 @@ class GerenciarTrabalhador(ctk.CTkFrame):
         self.lista_vales.pack(fill="both", expand=True, padx=15, pady=10)
 
     # -------------------------
-    # LÓGICA (inalterada)
+    # LÓGICA 
     # -------------------------
 
     def carregar_trabalhador(self):
