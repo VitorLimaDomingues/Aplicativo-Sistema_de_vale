@@ -17,7 +17,13 @@ from storage import (
     definir_salario,
     adicionar_vale,
     remover_vale,
-    limpar_vales
+    limpar_vales,
+    carregar_obras,
+    salvar_obras,
+    gerar_novo_id_obra,
+    adicionar_obra,
+    listar_obras,
+    registrar_pagamento
 )
 
 from utils import formatar_moeda, converter_moeda_para_float
@@ -72,6 +78,7 @@ class Menu(ctk.CTkFrame):
 
         self.criar_botao(container, "Registrar trabalhador", Registro)
         self.criar_botao(container, "Registrar Obra", RegistrarObra)
+        self.criar_botao(container, "Gerenciar obras", GerenciarObras)
         self.criar_botao(container, "Gerenciar trabalhadores", Gerenciar)
         self.criar_botao(container, "Deletar trabalhador", Deletar)
 
@@ -168,10 +175,101 @@ class RegistrarObra(ctk.CTkFrame):
         )
         titulo.pack(pady=20)
 
-        self.lista_frame = ctk.CTkScrollableFrame(self)
-        self.lista_frame.pack(fill="both", expand=True, padx=200, pady=20)
+        self.nome = ctk.CTkEntry(
+            self,
+            placeholder_text="Nome da obra",
+            width=400,
+            height=45,
+            font=("Arial", 16)
+        )
+        self.nome.pack(pady=10)
 
-    
+        self.montador = ctk.CTkEntry(
+            self,
+            placeholder_text="Nome do montador",
+            width=400,
+            height=45,
+            font=("Arial", 16)
+        )
+        self.montador.pack(pady=10)
+
+        self.cliente = ctk.CTkEntry(
+            self,
+            placeholder_text="Nome do cliente",
+            width=400,
+            height=45,
+            font=("Arial", 16)
+        )
+        self.cliente.pack(pady=10)
+
+        self.regiao = ctk.CTkEntry(
+            self,
+            placeholder_text="Região da obra",
+            width=400,
+            height=45,
+            font=("Arial", 16)
+        )
+        self.regiao.pack(pady=10)
+
+        self.salario_montador = ctk.CTkEntry(
+            self,
+            placeholder_text="Salário do montador",
+            width=400,
+            height=45,
+            font=("Arial", 16)
+        )
+        self.salario_montador.pack(pady=10)
+
+        self.valor_total = ctk.CTkEntry(
+            self,
+            placeholder_text="Valor da casa",
+            width=400,
+            height=45,
+            font=("Arial", 16)
+        )
+        self.valor_total.pack(pady=10)
+
+        ctk.CTkButton(
+            self,
+            text="Salvar",
+            width=200,
+            height=45,
+            command=self.salvar_obra
+        ).pack(pady=20)
+
+
+        ctk.CTkButton(
+            self,
+            text="Voltar",
+            width=200,
+            height=45,
+            command=lambda: controller.mostrar_tela(Menu)
+        ).pack(pady=20)
+
+    def salvar_obra(self):
+        nome = self.nome.get().strip()
+        montador = self.montador.get().strip()
+        cliente = self.cliente.get().strip()
+        regiao = self.regiao.get().strip()
+        salario_montador = self.salario_montador.get().strip()
+        valor_total = self.valor_total.get().strip()
+
+        if not nome or not montador or not cliente or not regiao or not salario_montador or not valor_total:
+            msg.showerror("Error", "Preencha todos os campos.")
+            return
+        
+        adicionar_obra(nome, montador, cliente, regiao, salario_montador, valor_total)
+
+        msg.showinfo("Sucesso", "Obra registrada com sucesso!")
+
+        self.nome.delete(0, "end")
+        self.montador.delete(0, "end")
+        self.cliente.delete(0, "end")
+        self.regiao.delete(0, "end")
+        self.salario_montador.delete(0, "end")
+        self.valor_total.delete(0, "end")
+
+        self.controller.mostrar_tela(Menu)
 
 
 # =============================
@@ -291,6 +389,14 @@ class Gerenciar(ctk.CTkFrame):
     def abrir(self, trabalhador):
         self.controller.trabalhador_atual = trabalhador
         self.controller.mostrar_tela(GerenciarTrabalhador)
+
+# =============================
+# GERENCIAR OBRAS
+# =============================
+class GerenciarObras(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
 
 
 # =============================
@@ -537,7 +643,7 @@ class App(ctk.CTk):
 
         self.telas = {}
 
-        for Tela in (Menu, Registro, RegistrarObra, Deletar, Gerenciar, GerenciarTrabalhador):
+        for Tela in (Menu, Registro, RegistrarObra, Deletar, Gerenciar, GerenciarTrabalhador, GerenciarObras):
             frame = Tela(self.container, self)
             self.telas[Tela] = frame
             frame.grid(row=0, column=0, sticky="nsew")

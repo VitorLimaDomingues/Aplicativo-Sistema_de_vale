@@ -1,0 +1,12 @@
+[
+    {
+        "id": 1,
+        "obra": "Panela",
+        "montador": "Elias",
+        "cliente": "Felipe",
+        "região": "Piracaia",
+        "salário do montador": "25000",
+        "Valor a pagar do cliente": "150000",
+        "valor_pago": 0
+    }
+]

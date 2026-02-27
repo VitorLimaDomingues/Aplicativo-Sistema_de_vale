@@ -10,30 +10,29 @@ ARQUIVO2 = "obra.json"
 # JSON para app
 # =========================
 
-def caminho_arquivo():
+def caminho_arquivo(nome_arquivo):
     if getattr(sys, 'frozen', False):
-        return os.path.join(os.path.dirname(sys.executable), "data.json")
-    return "data.json"
-
-def caminho_arquivo():
-    if getattr(sys, 'frozen', False):
-        return os.path.join(os.path.dirname(sys.executable), "obra.json")
-    return "obra.json"
+        return os.path.join(os.path.dirname(sys.executable), nome_arquivo)
+    return nome_arquivo
 
 # =========================
 # UTILIDADES INTERNAS
 # =========================
 
 def carregar_trabalhadores():
-    if not os.path.exists(ARQUIVO):
+    caminho = caminho_arquivo(ARQUIVO)
+
+    if not os.path.exists(caminho):
         return []
 
-    with open(ARQUIVO, "r", encoding="utf-8") as f:
+    with open(caminho, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
 def salvar_trabalhadores(trabalhadores):
-    with open(ARQUIVO, "w", encoding="utf-8") as f:
+    caminho = caminho_arquivo(ARQUIVO)
+
+    with open(caminho, "w", encoding="utf-8") as f:
         json.dump(trabalhadores, f, indent=4, ensure_ascii=False)
 
 
@@ -136,6 +135,7 @@ def limpar_vales(trabalhador_id):
 
     salvar_trabalhadores(trabalhadores)
 
+
 # =========================
 # OBRA
 # =========================
@@ -143,22 +143,28 @@ def limpar_vales(trabalhador_id):
 def carregar_obras():
     caminho = caminho_arquivo(ARQUIVO2)
 
-    if not os.path.exist(caminho):
+    if not os.path.exists(caminho):
         return []
-    
-    with open(caminho, "r", encoding="utf-8") as f:
-        return json.load(f)
-    
+
+    try:
+        with open(caminho, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        return []
+
+
 def salvar_obras(obras):
     caminho = caminho_arquivo(ARQUIVO2)
 
     with open(caminho, "w", encoding="utf-8") as f:
         json.dump(obras, f, indent=4, ensure_ascii=False)
 
+
 def gerar_novo_id_obra(obras):
     if not obras:
         return 1
     return max(o["id"] for o in obras) + 1
+
 
 def adicionar_obra(nome_obra, montador, cliente, regiao, salario_montador, valor_total):
     obras = carregar_obras()
@@ -171,14 +177,16 @@ def adicionar_obra(nome_obra, montador, cliente, regiao, salario_montador, valor
         "região": regiao,
         "salário do montador": salario_montador,
         "Valor a pagar do cliente": valor_total,
-        "Total pago": 0
+        "valor_pago": 0
     }
 
     obras.append(nova)
     salvar_obras(obras)
 
+
 def listar_obras():
     return carregar_obras()
+
 
 def registrar_pagamento(obra_id, valor):
     obras = carregar_obras()
