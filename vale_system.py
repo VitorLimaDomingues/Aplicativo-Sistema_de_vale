@@ -71,6 +71,7 @@ class Menu(ctk.CTkFrame):
         self.msg_label.pack(pady=5)
 
         self.criar_botao(container, "Registrar trabalhador", Registro)
+        self.criar_botao(container, "Registrar Obra", RegistrarObra)
         self.criar_botao(container, "Gerenciar trabalhadores", Gerenciar)
         self.criar_botao(container, "Deletar trabalhador", Deletar)
 
@@ -151,6 +152,26 @@ class Registro(ctk.CTkFrame):
         self.controller.trabalhador_atual = trabalhador
         self.controller.mostrar_tela(GerenciarTrabalhador)
 
+# ============================
+# REGISTRAR OBRA
+# ============================
+
+class RegistrarObra(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        titulo = ctk.CTkLabel(
+            self,
+            text="Registrar Obra",
+            font=("Arial", 28, "bold")
+        )
+        titulo.pack(pady=20)
+
+        self.lista_frame = ctk.CTkScrollableFrame(self)
+        self.lista_frame.pack(fill="both", expand=True, padx=200, pady=20)
+
+    
 
 
 # =============================
@@ -516,7 +537,7 @@ class App(ctk.CTk):
 
         self.telas = {}
 
-        for Tela in (Menu, Registro, Deletar, Gerenciar, GerenciarTrabalhador):
+        for Tela in (Menu, Registro, RegistrarObra, Deletar, Gerenciar, GerenciarTrabalhador):
             frame = Tela(self.container, self)
             self.telas[Tela] = frame
             frame.grid(row=0, column=0, sticky="nsew")

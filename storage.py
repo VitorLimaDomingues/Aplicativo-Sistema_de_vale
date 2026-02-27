@@ -4,6 +4,7 @@ import sys
 from datetime import datetime
 
 ARQUIVO = "data.json"
+ARQUIVO2 = "obra.json"
 
 # =========================
 # JSON para app
@@ -14,6 +15,10 @@ def caminho_arquivo():
         return os.path.join(os.path.dirname(sys.executable), "data.json")
     return "data.json"
 
+def caminho_arquivo():
+    if getattr(sys, 'frozen', False):
+        return os.path.join(os.path.dirname(sys.executable), "obra.json")
+    return "obra.json"
 
 # =========================
 # UTILIDADES INTERNAS
@@ -130,3 +135,57 @@ def limpar_vales(trabalhador_id):
             break
 
     salvar_trabalhadores(trabalhadores)
+
+# =========================
+# OBRA
+# =========================
+
+def carregar_obras():
+    caminho = caminho_arquivo(ARQUIVO2)
+
+    if not os.path.exist(caminho):
+        return []
+    
+    with open(caminho, "r", encoding="utf-8") as f:
+        return json.load(f)
+    
+def salvar_obras(obras):
+    caminho = caminho_arquivo(ARQUIVO2)
+
+    with open(caminho, "w", encoding="utf-8") as f:
+        json.dump(obras, f, indent=4, ensure_ascii=False)
+
+def gerar_novo_id_obra(obras):
+    if not obras:
+        return 1
+    return max(o["id"] for o in obras) + 1
+
+def adicionar_obra(nome_obra, montador, cliente, regiao, salario_montador, valor_total):
+    obras = carregar_obras()
+
+    nova = {
+        "id": gerar_novo_id_obra(obras),
+        "obra": nome_obra,
+        "montador": montador,
+        "cliente": cliente,
+        "região": regiao,
+        "salário do montador": salario_montador,
+        "Valor a pagar do cliente": valor_total,
+        "Total pago": 0
+    }
+
+    obras.append(nova)
+    salvar_obras(obras)
+
+def listar_obras():
+    return carregar_obras()
+
+def registrar_pagamento(obra_id, valor):
+    obras = carregar_obras()
+    
+    for o in obras:
+        if o["id"] == obra_id:
+            o["valor_pago"] += valor
+            break
+
+    salvar_obras(obras)
