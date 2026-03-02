@@ -226,3 +226,12 @@ def remover_obra(obra_id):
     obras = carregar_obras()
     obras = [obra for obra in obras if obra["id"] != obra_id]
     salvar_obras(obras)
+
+def garantir_arquivo_trabalhadores():
+    caminho = caminho_arquivo(ARQUIVO)
+
+    if not os.path.exists(caminho):
+        with open(caminho, "w", encoding="utf-8") as f:
+            json.dump([], f, indent=4, ensure_ascii=False)
+
+garantir_arquivo_trabalhadores()
