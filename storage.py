@@ -166,18 +166,17 @@ def gerar_novo_id_obra(obras):
     return max(o["id"] for o in obras) + 1
 
 
-def adicionar_obra(nome_obra, montador, cliente, regiao, salario_montador, valor_total):
+def adicionar_obra(nome_obra, montador, cliente, regiao, valor_total):
     obras = carregar_obras()
 
     nova = {
         "id": gerar_novo_id_obra(obras),
-        "obra": nome_obra,
+        "nome": nome_obra,
         "montador": montador,
         "cliente": cliente,
-        "região": regiao,
-        "salário do montador": salario_montador,
-        "Valor a pagar do cliente": valor_total,
-        "valor_pago": 0
+        "regiao": regiao,
+        "valor_total": float(valor_total),
+        "valor_pago": 0.0
     }
 
     obras.append(nova)
@@ -193,7 +192,37 @@ def registrar_pagamento(obra_id, valor):
     
     for o in obras:
         if o["id"] == obra_id:
+
+            if "pagamentos" not in o:
+                o["pagamentos"] = []
+
+            from datetime import datetime
+            agora = datetime.now()
+
             o["valor_pago"] += valor
+
+            o["pagamentos"].append({
+                "valor": valor,
+                "data": agora.strftime("%d/%m/%Y"),
+                "hora": agora.strftime("%H:%M")
+            })
             break
 
+    salvar_obras(obras)
+
+def remover_pagamento_obra(obra_id, index_pagamento):
+    obras = carregar_obras()
+
+    for obra in obras:
+        if obra["id"] == obra_id:
+            pagamento = obra["pagamentos"].pop(index_pagamento)
+            obra["valor_pago"] -= pagamento["valor"]
+            break
+
+    salvar_obras(obras)
+
+
+def remover_obra(obra_id):
+    obras = carregar_obras()
+    obras = [obra for obra in obras if obra["id"] != obra_id]
     salvar_obras(obras)
